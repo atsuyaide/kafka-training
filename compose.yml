@@ -23,7 +23,7 @@ services:
     privileged: true
     volumes:
       - ./kafka/broker-3:/src
-    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+    depends_on: # 同上
       - broker-2
 
   kafka-ui:
@@ -37,7 +37,7 @@ services:
       - "9000:9000" # CMAK
     volumes:
       - ./kafka/ui:/src
-    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+    depends_on: # 同上
       - broker-3
 
   producer:
@@ -47,7 +47,7 @@ services:
     stdin_open: true
     volumes:
       - ./client/producer:/src
-    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+    depends_on: # 同上
       - kafka-ui
 
   consumer:

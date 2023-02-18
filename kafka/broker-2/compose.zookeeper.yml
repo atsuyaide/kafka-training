@@ -3,16 +3,16 @@ version: "3"
 services:
   cp-zookeeper:
     image: confluentinc/cp-zookeeper:5.5.1
-    container_name: zookeeper-${ZOOKEEPER_SERVER_ID:?ZOOKEEPER_SERVER_ID does not defined}
+    container_name: zookeeper-${ZOOKEEPER_SERVER_ID:?ZOOKEEPER_SERVER_ID not defined}
     ports:
       - "2181:2181"
       - "2888:2888"
       - "3888:3888"
     environment:
       TZ: Asia/Tokyo
-      ZOOKEEPER_SERVER_ID: ${ZOOKEEPER_SERVER_ID:?ZOOKEEPER_SERVER_ID does not defined}
+      ZOOKEEPER_SERVER_ID: ${ZOOKEEPER_SERVER_ID:?ZOOKEEPER_SERVER_ID not defined}
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: ${ZOOKEEPER_SERVERS:?ZOOKEEPER_SERVERS does not defined}
+      ZOOKEEPER_SERVERS: ${ZOOKEEPER_SERVERS:?ZOOKEEPER_SERVERS not defined}

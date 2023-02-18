@@ -3,11 +3,11 @@ version: "3"
 services:
   cp-kafka:
     image: confluentinc/cp-kafka:5.5.1
-    container_name: kafka-${KAFKA_BROKER_ID:?KAFKA_BROKER_ID does not defined}
+    container_name: kafka-${KAFKA_BROKER_ID:?KAFKA_BROKER_ID not defined}
     ports:
       - "9092:9092"
     environment:
       TZ: Asia/Tokyo
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:?KAFKA_BROKER_ID does not defined}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT:?KAFKA_ZOOKEEPER_CONNECT does not defined}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:?KAFKA_ADVERTISED_LISTENERS does not defined}
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:?KAFKA_BROKER_ID not defined}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT:?KAFKA_ZOOKEEPER_CONNECT not defined}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:?KAFKA_ADVERTISED_LISTENERS not defined}
