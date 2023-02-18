@@ -8,8 +8,11 @@
     - [Kafak を起動](#kafak-を起動)
   - [各種 UI の起動](#各種-ui-の起動)
     - [Kafka Topics UI](#kafka-topics-ui)
-    - [CMAK](#cmak)
     - [Kafka UI](#kafka-ui)
+    - [CMAK](#cmak)
+  - [クライアントからデータを流す](#クライアントからデータを流す)
+    - [Producer](#producer)
+    - [Consumer](#consumer)
 
 ## 概要
 
@@ -57,7 +60,7 @@ producer  172.18.0.6
 consumer  172.18.0.7
 ```
 
-broker-1, 2, 3 の IP アドレスを`kafka`ディレクトリ配下の`.env`ファイルに反映します.
+`broker-1`, `2`, `3` の IP アドレスを`kafka`ディレクトリ配下の`.env`ファイルに反映します.
 `.env`ファイルのテンプレートとして`.env.template`が用意されているので, 同じディレクトリにコピーしてファイルを編集してください.
 
 私の環境ではそれぞれの`kafka/*/.env`ファイルを次のように編集しました.
@@ -111,7 +114,7 @@ Apache Kafka を動作させるには Apache Zookeeper と接続する必要が�
 
 ### Zookeeper クラスターの構成
 
-Zookeeper を `broker-1, 2, 3`で起動し, クラスターを構成します.
+Zookeeper を `broker-1`, `2`, `3`で起動し, クラスターを構成します.
 起動順序は特に指定はありませんが, ここでは ID 順に起動していきます.
 
 コンテナに入ります.
@@ -164,18 +167,6 @@ docker compose -f ./src/compose.topics-ui.yml up -d
 
 ![Kafka Topics UIのトップ画面](./blob/kafka-topics-ui.png)
 
-### CMAK
-
-[CMAK](https://github.com/yahoo/CMAK)(Kafka Manager の後継)の起動
-
-```shell
-docker compose -f ./src/compose.cmak.yml up -d
-```
-
-`localhost:8080`にアクセスすると UI が表示されます.
-
-![CMAKのトップ画面](./blob/cmak.png)
-
 ### Kafka UI
 
 [Kafka UI](https://github.com/provectus/kafka-ui)の起動
@@ -187,3 +178,21 @@ docker compose -f ./src/compose.ui.yml up -d
 `localhost:8888`アクセスすると UI が表示されます.
 
 ![Kafka UIのトップ画面](./blob/kafka-ui.png)
+
+### CMAK
+
+[CMAK](https://github.com/yahoo/CMAK)(Kafka Manager の後継)の起動
+
+```shell
+docker compose -f ./src/compose.cmak.yml up -d
+```
+
+`localhost:9000`にアクセスすると UI が表示されます.
+
+![CMAKのトップ画面](./blob/cmak.png)
+
+## クライアントからデータを流す
+
+### Producer
+
+### Consumer
