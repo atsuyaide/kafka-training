@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:4.0.0
+    container_name: kafkarest
+    environment:
+      TZ: Asia/Tokyo
+      KAFKA_REST_ZOOKEEPER_CONNECT: ${KAFKA_REST_ZOOKEEPER_CONNECT:?KAFKA_REST_ZOOKEEPER_CONNECT does not defined}
+      KAFKA_REST_HOST_NAME: "kafkarest"
+      KAFKA_REST_LISTENERS: "http://kafkarest:8082"
+
+  kafka-topic-ui:
+    container_name: kafka-topics-ui
+    image: landoop/kafka-topics-ui:0.9.3
+    depends_on:
+      - kafka-rest
+    environment:
+      TZ: Asia/Tokyo
+      KAFKA_REST_PROXY_URL: "http://kafkarest:8082"
+      PROXY: "true"
+    ports:
+      - "8000:8000"

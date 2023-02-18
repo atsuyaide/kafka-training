@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  broker-1:
+    container_name: broker-1
+    image: docker:20-dind
+    privileged: true
+    volumes:
+      - ./kafka/broker-1:/src
+
+  broker-2:
+    container_name: broker-2
+    image: docker:20-dind
+    privileged: true
+    volumes:
+      - ./kafka/broker-2:/src
+    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+      - broker-1
+
+  broker-3:
+    container_name: broker-3
+    image: docker:20-dind
+    privileged: true
+    volumes:
+      - ./kafka/broker-3:/src
+    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+      - broker-2
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: docker:20-dind
+    privileged: true
+    ports:
+      - "8000:8000" # Kafka Topics UI
+      - "8080:8080" # Kafka Manager
+      - "8888:8888" # kafka UI
+      - "9000:9000" # CMAK
+    volumes:
+      - ./kafka/ui:/src
+    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+      - broker-3
+
+  producer:
+    container_name: producer
+    image: python:3.9-alpine
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./client/producer:/src
+    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+      - kafka-ui
+
+  consumer:
+    container_name: consumer
+    image: python:3.9-alpine
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./client/producer:/src
+    depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
+      - producer

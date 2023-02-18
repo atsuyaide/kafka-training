@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  cmak:
+    image: ghcr.io/eshepelyuk/dckr/cmak-3.0.0.5:latest
+    container_name: kafka-cmak
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: ${ZK_HOSTS:?ZK_HOSTS does not defined}

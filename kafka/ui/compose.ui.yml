@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8888:8080
+    environment:
+      TZ: Asia/Tokyo
+      KAFKA_CLUSTERS_0_NAME: broker-0
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ${KAFKA_UI_BOOTSTRAPSERVERS:?KAFKA_UI_BOOTSTRAPSERVERS does not defined}:9092
