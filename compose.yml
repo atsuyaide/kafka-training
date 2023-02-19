@@ -32,9 +32,10 @@ services:
     privileged: true
     ports:
       - "8000:8000" # Kafka Topics UI
-      - "8080:8080" # Kafka Manager
-      - "8888:8888" # kafka UI
+      - "8080:8080" # Redpanda Console
+      - "8888:8888" # Kafka UI
       - "9000:9000" # CMAK
+      - "9090:9090" # Kafdrop
     volumes:
       - ./kafka/ui:/src
     depends_on: # 同上

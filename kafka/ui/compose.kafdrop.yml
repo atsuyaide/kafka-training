@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    ports:
+      - "9090:9000"
+    environment:
+      KAFKA_BROKERCONNECT: ${KAFKA_BROKERCONNECT:?KAFKA_BROKERCONNECT does not defined}:9092
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
