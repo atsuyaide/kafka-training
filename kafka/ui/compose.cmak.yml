@@ -7,4 +7,5 @@ services:
     ports:
       - "9000:9000"
     environment:
-      ZK_HOSTS: ${ZK_HOSTS:?ZK_HOSTS does not defined}
+      TZ: Asia/Tokyo
+      ZK_HOSTS: ${ZK_HOSTS:?ZK_HOSTS not defined}

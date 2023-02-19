@@ -52,12 +52,12 @@ docker ps -q | xargs -n 1 docker inspect --format '{{ .Name }} {{range .NetworkS
 
 ```shell
 $ docker ps -q | xargs -n 1 docker inspect --format '{{ .Name }} {{range .NetworkSettings.Networks}} {{.IPAddress}}{{end}}' | sed 's#^/##' | sort -k 2
-broker-1  172.18.0.2
-broker-2  172.18.0.3
-broker-3  172.18.0.4
-kafka-ui  172.18.0.5
-producer  172.18.0.6
-consumer  172.18.0.7
+broker-1  172.19.0.2
+broker-2  172.19.0.3
+broker-3  172.19.0.4
+kafka-ui  172.19.0.5
+producer  172.19.0.6
+consumer  172.19.0.7
 ```
 
 `broker-1`, `2`, `3` の IP アドレスを`kafka`ディレクトリ配下の`.env`ファイルに反映します.
@@ -66,9 +66,9 @@ consumer  172.18.0.7
 私の環境ではそれぞれの`kafka/*/.env`ファイルを次のように編集しました.
 
 ```env
-BROKER1=172.18.0.2
-BROKER2=172.18.0.3
-BROKER3=172.18.0.4
+BROKER1=172.19.0.2
+BROKER2=172.19.0.3
+BROKER3=172.19.0.4
 
 ...
 ```
@@ -191,8 +191,26 @@ docker compose -f ./src/compose.cmak.yml up -d
 
 ![CMAKのトップ画面](./blob/cmak.png)
 
+> NOTE クラスターの追加は手動または[API](https://github.com/yahoo/CMAK/blob/master/conf/routes)で実行する必要がある. 起動時に指定する`ZK_HOSTS`は CMAK を監視するための Zookeeper であって, Kafka クラスターではないため.
+
+手動でクラスターを追加します.
+
+![クラスターの追加画面](./blob/cmak.how-to-add-cluster.png)
+
+追加に成功しました.
+
+![クラスタの追加に成功](./blob/cmak.added.png)
+
 ## クライアントからデータを流す
 
 ### Producer
 
+```shell
+docker exec -it producer producer sh
+```
+
 ### Consumer
+
+```shell
+docker exec -it producer consumer sh
+```
