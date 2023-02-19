@@ -42,8 +42,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print(args.bootstrap_servers)
-
     try:
         type_to_send(bootstrap_servers=args.bootstrap_servers, topic=args.topic)
     except KeyboardInterrupt:

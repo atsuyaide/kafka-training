@@ -56,6 +56,6 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./client/producer:/src
+      - ./client/consumer:/src
     depends_on: # 割り当てられるIPアドレスを昇順にするため依存関係をつける
       - producer
