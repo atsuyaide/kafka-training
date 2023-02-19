@@ -31,14 +31,10 @@ def main() -> None:
         "--bootstrap-servers",
         type=str,
         default=os.environ["BOOTSTRAP_SERVERS"],
-        help="接続するブローカー情報"
+        help="接続するブローカーの情報",
     )
     parser.add_argument(
-        "-t",
-        "--topic",
-        type=str,
-        required=True,
-        help="メッセージを送信するトピック名"
+        "-t", "--topic", type=str, required=True, help="メッセージを送信するトピック名"
     )
     args = parser.parse_args()
 
