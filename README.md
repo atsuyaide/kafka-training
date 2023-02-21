@@ -1,6 +1,6 @@
-# Kafka Cluster を複数ホストで起動する方法
+# Docker を活用して複数マシンに Kafka クラスターを構築する方法
 
-- [Kafka Cluster を複数ホストで起動する方法](#kafka-cluster-を複数ホストで起動する方法)
+- [Docker を活用して複数マシンに Kafka クラスターを構築する方法](#docker-を活用して複数マシンに-kafka-クラスターを構築する方法)
   - [概要](#概要)
   - [準備](#準備)
   - [Kafka クラスターを作成](#kafka-クラスターを作成)
@@ -8,8 +8,10 @@
     - [Kafak を起動](#kafak-を起動)
   - [各種 UI の起動](#各種-ui-の起動)
     - [Kafka Topics UI](#kafka-topics-ui)
+    - [Redpanda Console](#redpanda-console)
     - [Kafka UI](#kafka-ui)
-    - [CMAK](#cmak)
+    - [CMAK(Kafka Manager の後継)](#cmakkafka-manager-の後継)
+    - [Kafdrop](#kafdrop)
   - [クライアントからデータを流す](#クライアントからデータを流す)
     - [Producer](#producer)
     - [Consumer](#consumer)
@@ -60,17 +62,16 @@ producer  172.19.0.6
 consumer  172.19.0.7
 ```
 
-`broker-1`, `2`, `3` の IP アドレスを`kafka`ディレクトリ配下の`.env`ファイルに反映します.
+`broker-1`, `2`, `3` の IP アドレスを`kafka`, `client`ディレクトリ配下の`.env`ファイルに反映します.
 `.env`ファイルのテンプレートとして`.env.template`が用意されているので, 同じディレクトリにコピーしてファイルを編集してください.
 
-私の環境ではそれぞれの`kafka/*/.env`ファイルを次のように編集しました.
+私の環境ではそれぞれの`.env`ファイルを次のように編集しました.
 
 ```env
 BROKER1=172.19.0.2
 BROKER2=172.19.0.3
 BROKER3=172.19.0.4
 
-...
 ```
 
 これで準備完了です.
@@ -98,8 +99,22 @@ kafka
     ├── .env
     ├── .env.template
     ├── compose.cmak.yml
-    ├── compose.topics-ui.yml
+            ...
     └── compose.ui.yml
+```
+
+```shell
+$ tree -a ./kafka
+├── consumer
+│   ├── .env
+│   ├── .env.template
+│   ├── main.py
+│   └── requirements.txt
+└── producer
+    ├── .env
+    ├── .env.template
+    ├── main.py
+    └── requirements.txt
 ```
 
 各フォルダは`broker-1`, `2`, `3`, `kafka-ui`にそれぞれ volume されています.
@@ -155,9 +170,7 @@ docker exec -it kafka-ui sh
 
 利用したい UI ツールを起動してくだい.
 
-### Kafka Topics UI
-
-[Kafka Topics UI](https://github.com/lensesio/kafka-topics-ui) の起動
+### [Kafka Topics UI](https://github.com/lensesio/kafka-topics-ui)
 
 ```shell
 docker compose -f ./src/compose.topics-ui.yml up -d
@@ -167,9 +180,17 @@ docker compose -f ./src/compose.topics-ui.yml up -d
 
 ![Kafka Topics UIのトップ画面](./blob/kafka-topics-ui.png)
 
-### Kafka UI
+### [Redpanda Console](https://github.com/redpanda-data/console)
 
-[Kafka UI](https://github.com/provectus/kafka-ui)の起動
+```shell
+docker compose -f ./src/compose.redpanda-console.yml up -d
+```
+
+`localhost:8080`にアクセスすると UI が表示されます.
+
+![Redpanda Consoleのトップ画面](./blob/redpanda-console.png)
+
+### [Kafka UI](https://github.com/provectus/kafka-ui)
 
 ```shell
 docker compose -f ./src/compose.ui.yml up -d
@@ -179,9 +200,7 @@ docker compose -f ./src/compose.ui.yml up -d
 
 ![Kafka UIのトップ画面](./blob/kafka-ui.png)
 
-### CMAK
-
-[CMAK](https://github.com/yahoo/CMAK)(Kafka Manager の後継)の起動
+### [CMAK](https://github.com/yahoo/CMAK)(Kafka Manager の後継)
 
 ```shell
 docker compose -f ./src/compose.cmak.yml up -d
@@ -193,24 +212,65 @@ docker compose -f ./src/compose.cmak.yml up -d
 
 > NOTE クラスターの追加は手動または[API](https://github.com/yahoo/CMAK/blob/master/conf/routes)で実行する必要がある. 起動時に指定する`ZK_HOSTS`は CMAK を監視するための Zookeeper であって, Kafka クラスターではないため.
 
-手動でクラスターを追加します.
+### [Kafdrop](https://github.com/obsidiandynamics/kafdrop)
 
-![クラスターの追加画面](./blob/cmak.how-to-add-cluster.png)
+```shell
+docker compose -f ./src/compose.kafdrop.yml up -d
+```
 
-追加に成功しました.
+`localhost:9090`にアクセスすると UI が表示されます.
 
-![クラスタの追加に成功](./blob/cmak.added.png)
+![Kafdropのトップ画面](./blob/kafdrop.png)
 
 ## クライアントからデータを流す
 
+[kafka-python](https://kafka-python.readthedocs.io/en/master/)を使って実際にメッセージを流してみます.
+
+![Pythonクライアントを使ったデモ](./blob/demo.gif)
+
+左がプロデューサー, 右がコンシューマーです.
+プロデューサーが送信した文字列をコンシューマーが即時受け取れていることを確認できます.
+
 ### Producer
 
+プロデューサー側のコンテナに入ります.
+
 ```shell
-docker exec -it producer producer sh
+docker exec -it producer sh
 ```
+
+ライブラリをインストールします.
+
+```shell
+pip install -r /src/requirements.txt
+```
+
+Producer を起動します. `--bootstrap-servers`の部分は自身の情報で実行してください.
+
+```shell
+python /src/main.py --topic sample-topic --bootstrap-servers 172.19.0.2:9092,172.19.0.3:9092,172.19.0.4:9092
+```
+
+文字列を入力し, Enter で Kafka クラスターにメッセージを送信できます.
 
 ### Consumer
 
+コンシューマー側のコンテナに入ります.
+
 ```shell
-docker exec -it producer consumer sh
+docker exec -it producer sh
 ```
+
+ライブラリをインストールします.
+
+```shell
+pip install -r /src/requirements.txt
+```
+
+Producer を起動します. `--bootstrap-servers`の部分は自身の情報で実行してください.
+
+```shell
+python /src/main.py --topic sample-topic --bootstrap-servers 172.19.0.2:9092,172.19.0.3:9092,172.19.0.4:9092
+```
+
+待ち受け状態で到着したメッセージ標準出力されます.
