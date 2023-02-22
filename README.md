@@ -15,6 +15,7 @@
   - [クライアントからデータを流す](#クライアントからデータを流す)
     - [Producer](#producer)
     - [Consumer](#consumer)
+  - [最後に](#最後に)
 
 ## 概要
 
@@ -24,7 +25,7 @@ Docker を利用して上記の構成で
 
 - Kafka クラスター
 - Kafka UI ツール
-- Kafka クライアント
+- Kafka クライアント(Python)
 
 を構築します.
 
@@ -117,7 +118,7 @@ $ tree -a ./kafka
     └── requirements.txt
 ```
 
-各フォルダは`broker-1`, `2`, `3`, `kafka-ui`にそれぞれ volume されています.
+各フォルダは後ほど起動するコンテナにそれぞれ volume されています.
 
 ## Kafka クラスターを作成
 
@@ -148,8 +149,8 @@ docker compose -f ./src/compose.zookeeper.yml up -d
 
 ### Kafak を起動
 
-Kafka を `broker-1`, `2`, `3`で起動し, Zookeeper と接続した上でクラスターを構成します.
-Kafka の起動順序も特に指定はありません.
+Kafka を `broker-1`, `2`, `3`で起動し, クラスターを構成します.
+起動時に Zookeeper クラスターに接続しますが, Kafka も起動順序について特に指定はありません.
 ここでも ID 順に起動していきます.
 
 Kafka を起動します.
@@ -258,7 +259,7 @@ python /src/main.py --topic sample-topic --bootstrap-servers 172.19.0.2:9092,172
 コンシューマー側のコンテナに入ります.
 
 ```shell
-docker exec -it producer sh
+docker exec -it consumer sh
 ```
 
 ライブラリをインストールします.
@@ -274,3 +275,22 @@ python /src/main.py --topic sample-topic --bootstrap-servers 172.19.0.2:9092,172
 ```
 
 待ち受け状態で到着したメッセージ標準出力されます.
+
+[各種 UI の起動](#各種-ui-の起動)のセクションで起動したツールで, 到着したメッセージを確認できます.
+
+また, `--group-id`でコンシューマーグループ ID を指定できます.
+指定して実行すると UI ツールのコンシューマ一覧に表示されるようになります.
+
+![Kafka UIのConsumers画面](./blob/consumers.png)
+
+この画像は`--group-id sample-group`とした場合です.
+
+## 最後に
+
+全てのコンテナを落として終了です.
+
+```shell
+docker compose down
+```
+
+お疲れ様でした!!
